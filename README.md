@@ -18,5 +18,22 @@ Para correr el servidor en modo desarrollo, ejecutar el siguiente comando.
 ```bash
 npm run dev
 ```
+## Estructura de carpetas 
+
+```bash
+RED_WORK_BACKEND/
+├── src/
+│   ├── controllers/
+│   ├── models/
+│   ├── services/
+│   ├── middlewares/
+│   ├── routes/
+│   ├── utils/
+│   ├── config/
+│   └── types/
+├── dist/
+└── tests/
+```
+
 
 
