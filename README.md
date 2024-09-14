@@ -4,7 +4,7 @@
 Al clonar el repositorio, ejecutar el siguiente comando para instalar las dependencias necesarias.
 
 > [!IMPORTANT]  
-> Verifica el archivo .env y asegúrate de que las variables de entorno estén configuradas correctamente.
+> Verifica tu archivo local .env y asegúrate de que las variables de entorno estén configuradas correctamente.
 
 ```bash
 npm install
@@ -108,6 +108,26 @@ Para usar estas funciones en tus componentes, importa las funciones desde `fires
 
 ```typescript
 import { addData, getData, updateData, deleteData } from '../services/firestoreService';
+```
+## Gestion de archivos de entorno (.env)
+
+El archivo `.env` contiene variables de entorno, que son valores clave utilizados por la aplicación durante su ejecución. Estas variables permiten separar la configuración del código, facilitando la gestión de datos sensibles como contraseñas, claves de API, etc. Ademas este archivo tiene que ser diseñado para un entorno local.
+
+### Archivo `.env.example`
+
+Para que el equipo sepa qué variables debe incluir en su archivo `.env`, puedes crear un archivo `.env.example` con las claves de las variables, pero sin valores sensibles:
+
+```bash
+# Archivo .env.example para Backend
+GOOGLE_APPLICATION_CREDENTIALS=
+```
+> [!IMPORTANT]  
+> Cada desarrollador debe copiar este archivo y renombrarlo como .env, luego rellenar los valores correspondientes.
+
+### Configuración en el código
+
+*explicacion de los scripts
+
 
 
 
