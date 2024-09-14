@@ -3,6 +3,9 @@
 ## Instrucciones
 Al clonar el repositorio, ejecutar el siguiente comando para instalar las dependencias necesarias.
 
+> [!IMPORTANT]  
+> Verifica el archivo .env y asegúrate de que las variables de entorno estén configuradas correctamente.
+
 ```bash
 npm install
 ```
