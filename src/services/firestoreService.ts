@@ -1,40 +1,43 @@
-import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "firebase/firestore"
+import { getFirestore, CollectionReference, DocumentData, QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import app from "../config/firebase";
 
 const db = getFirestore(app);
 
-export const addData = async (collectionName: string, data:object) => {
+export const addData = async (collectionName: string, data: object): Promise<string | undefined> => {
     try {
-        const docRef = await addDoc(collection(db, collectionName), data);
+        const collectionRef = db.collection(collectionName);
+        const docRef = await collectionRef.add(data);
         return docRef.id;
     }catch (e) {
         console.error("Error adding: ", e);
     }
 };
 
-export const getData = async (collectionName: string) => {
+export const getData = async (collectionName: string): Promise<any[]> => {
     try {
-        const querySnapshot = await getDocs(collection(db, collectionName));
-        return querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+        const collectionRef = db.collection(collectionName);
+        const querySnapshot: QuerySnapshot<DocumentData> = await collectionRef.get();
+        return querySnapshot.docs.map((doc: DocumentSnapshot<DocumentData>) => ({ id: doc.id, ...doc.data() }));
     }catch (e) {
         console.error("Error getting: ", e);
+        return [];
     }
 };
 
-export const updateData = async (collectionName: string, docId: string, newData: object) => {
+export const updateData = async (collectionName: string, docId: string, newData: object): Promise<void> => {
     try {
-        const docRef = doc(db, collectionName, docId);
-        await updateDoc(docRef, newData);
-    }catch (e){
-        console.error("Error updatin: ", e);
+        const docRef = db.collection(collectionName).doc(docId);
+        await docRef.update(newData);
+    }catch (e) {
+        console.error("Error updating: ", e);
     }
 };
 
-export const deleteData = async (collectionName: string, docId: string) => {
+export const deleteData = async (collectionName: string, docId: string): Promise<void> => {
     try {
-        const docRef = doc(db, collectionName, docId);
-        await deleteDoc(docRef);
-    }catch (e){
+        const docRef = db.collection(collectionName).doc(docId);
+        await docRef.delete();
+    }catch (e) {
         console.error("Error deleting: ", e);
     }
 };
