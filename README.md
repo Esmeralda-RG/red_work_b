@@ -41,7 +41,7 @@ RED_WORK_BACKEND/
 
 Este proyecto usa **Firebase** como base de datos NoSQL, porque es escalable y permite manejar grandes volúmenes de datos de manera eficiente. Su capacidad de actualización en tiempo real es crucial para nuestra plataforma, ya que facilita la sincronización instantánea entre clientes y trabajadores. Además, Firebase se integra bien con otras herramientas y es fácil de configurar y usar, a la vez que permite organizar los datos de forma flexible. Sin embargo, dado que Firebase es un servicio de pago, en caso de que el flujo de datos crezca significativamente, podríamos considerar cambiar a otra base de datos más adecuada para manejar un volumen mayor.
 
-### Estructura de la base de datos 
+## Estructura de la base de datos 
 
 ### Colecciones
 
@@ -90,6 +90,24 @@ Este proyecto usa **Firebase** como base de datos NoSQL, porque es escalable y p
 3. Cada **solicitud** (Request) puede tener solo una **reseña** (Reviews) (1:1).
 4. Cada **trabajador** (Workers) puede recibir muchas **reseñas** (Reviews) (1:N).
 5. Cada **cliente** (Clients) puede dejar muchas **reseñas** (Reviews) (1:N).
+
+## Uso de `firestoreService.ts`
+
+El archivo `src/services/firestoreService.ts` proporciona funciones para realizar operaciones básicas en Firestore.
+
+### Funciones Disponibles
+
+- `addData(collectionName: string, data: object)`
+- `getData(collectionName: string)`
+- `updateData(collectionName: string, docId: string, newData: object)`
+- `deleteData(collectionName: string, docId: string)`
+
+### Ejemplo de Uso
+
+Para usar estas funciones en tus componentes, importa las funciones desde `firestoreService.ts`:
+
+```typescript
+import { addData, getData, updateData, deleteData } from '../services/firestoreService';
 
 
 
