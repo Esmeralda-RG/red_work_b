@@ -37,6 +37,10 @@ RED_WORK_BACKEND/
 ├── dist/
 └── tests/
 ```
+## Base de datos
+
+Este proyecto usa **Firebase** como base de datos NoSQL porque es escalable y permite manejar grandes volúmenes de datos de manera eficiente. Su capacidad de actualización en tiempo real es crucial para nuestra plataforma, ya que facilita la sincronización instantánea entre clientes y trabajadores. Además, Firebase se integra bien con otras herramientas y es fácil de configurar y usar, a la vez que permite organizar los datos de forma flexible. Sin embargo, dado que Firebase es un servicio de pago, en caso de que el flujo de datos crezca significativamente, podríamos considerar cambiar a otra base de datos más adecuada para manejar un volumen mayor.
+
 ## Estructura de la base de datos 
 
 ### Colecciones
