@@ -93,7 +93,7 @@ Este proyecto usa **Firebase** como base de datos NoSQL, porque es escalable y p
 
 ## Uso de `firestoreService.ts`
 
-El archivo `src/services/firestoreService.ts` proporciona funciones para realizar operaciones básicas en Firestore, incluyendo agregar, obtener, actualizar y eliminar documentos (CRUD).
+El archivo `src/services/firestoreService.ts` proporciona funciones para realizar operaciones básicas en Firestore.
 
 ### Funciones Disponibles
 
