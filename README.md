@@ -95,16 +95,7 @@ Claro, aquí tienes un modelado detallado para tu proyecto en Firebase, siguiend
 
 ## Modelado de Datos
 
-El modelado de la estructura de datos vista anteriormente para la base de datos `NoSQL Firestore`, se deben seguir principios diferentes de los de una base de datos relacional como SQL(con sus diagramas ERD). En `Firestore`, los datos se almacenan en `documentos` que forman parte de `colecciones`, y los ``documentos`` pueden anidar más colecciones y subcolecciones. Ademas Firestore no soporta las relaciones entre colecciones como en una base de datos relacional, por lo que se deben tener en cuenta las relaciones entre los documentos para poder realizar consultas eficientes.
-
-Para nuestro caso se planteará usar las tecnicas de modelado de datos para Firestore, que se basan en la ``denormalización`` y la ``duplicación de datos`` lo cual ayuda a optimizar las consultas y la velocidad de recuperación de datos debido a que se evita la necesidad de realizar múltiples consultas para obtener información relacionada. 
-
-Dicho esto, a continuación se presenta un modelo de datos para ``RedWork``, que incluye las colecciones necesarias y los campos requeridos para cada documento. Además, se describen las relaciones entre los documentos y cómo se representan en Firestore.
-
-
 #### Colección: `Workers`
-- Almacena información sobre los trabajadores disponibles.
-- Cada documento representa un trabajador individual.
 
 ```json
 {
@@ -121,8 +112,6 @@ Dicho esto, a continuación se presenta un modelo de datos para ``RedWork``, que
 ```
 
 #### Colección: `Clients`
-- Almacena información sobre los clientes.
-- Cada documento representa un cliente individual.
 
 ```json
 {
@@ -132,8 +121,6 @@ Dicho esto, a continuación se presenta un modelo de datos para ``RedWork``, que
 ```
 
 #### Colección: `Requests`
-- Almacena las solicitudes realizadas por los clientes.
-- Cada documento representa una solicitud individual.
 
 ```json
 {
@@ -148,8 +135,6 @@ Dicho esto, a continuación se presenta un modelo de datos para ``RedWork``, que
 ```
 
 #### Colección: `Reviews`
-- Almacena las reseñas dejadas por los clientes para los trabajadores.
-- Cada documento representa una reseña individual.
 
 ```json
 {
@@ -162,35 +147,6 @@ Dicho esto, a continuación se presenta un modelo de datos para ``RedWork``, que
   "dateReview": "2024-09-16T14:00:00Z"
 }
 ```
-
-### Relaciones en el Modelado
-
-Para el caso de las relaciones entre documentos/nodos estas se representan mediante campos de referencia como lo son (`clientId`, `workerId`, `requestId`), los cuales vinculan documentos en diferentes colecciones. Esta estructura permite consultar y asociar datos de manera eficiente, reflejando las relaciones de uno a muchos y uno a uno planteadas en la estructura en el manejo que se tendrá en la base de datos no relacion de Firebase(Firestore).
-
-Adicionalmente se ha duplicado información como `clientName` y `workerName` en `Requests` para facilitar consultas rápidas y evitar la necesidad de realizar múltiples consultas para obtener datos relacionados.
-
-Estas practicas mencionadas anteriormente son comunmente utilizadas para el modelado de datos en las bases de datos no relaciones (noSQL) como Firebase.
-
-1. **Relación 1:N entre `Clients` y `Requests`**:
-   - Cada cliente puede crear muchas solicitudes. En el modelo, esto se refleja al almacenar `clientId` en cada documento de la colección `Requests`. De esta manera, puedes recuperar todas las solicitudes hechas por un cliente específico utilizando `clientId`.
-   - **Ejemplo**: Si `clientId1` crea 3 solicitudes, cada una de esas solicitudes tendrá `clientId` igual a `clientId1`.
-
-2. **Relación 1:N entre `Workers` y `Requests`**:
-   - Cada trabajador puede recibir muchas solicitudes. En el modelo, esto se refleja al almacenar `workerId` en cada documento de la colección `Requests`. Así, puedes obtener todas las solicitudes asignadas a un trabajador específico usando `workerId`.
-   - **Ejemplo**: Si `workerId1` tiene 5 solicitudes asignadas, cada una tendrá `workerId` igual a `workerId1`.
-
-3. **Relación 1:1 entre `Requests` y `Reviews`**:
-   - Cada solicitud puede tener solo una reseña. Esto se refleja al almacenar `requestId` en cada documento de la colección `Reviews`. Esto asegura que cada reseña se asocie con una única solicitud.
-   - **Ejemplo**: Si `requestId1` tiene una reseña, el campo `requestId` en la reseña será `requestId1`.
-
-4. **Relación 1:N entre `Workers` y `Reviews`**:
-   - Cada trabajador puede recibir muchas reseñas. En el modelo, esto se refleja al almacenar `workerId` en cada documento de la colección `Reviews`. De este modo, puedes obtener todas las reseñas dejadas para un trabajador específico usando `workerId`.
-   - **Ejemplo**: Si `workerId1` tiene 10 reseñas, cada una tendrá `workerId` igual a `workerId1`.
-
-5. **Relación 1:N entre `Clients` y `Reviews`**:
-   - Cada cliente puede dejar muchas reseñas. Esto se refleja al almacenar `clientId` en cada documento de la colección `Reviews`. Así, puedes obtener todas las reseñas dejadas por un cliente específico utilizando `clientId`.
-   - **Ejemplo**: Si `clientId1` deja 4 reseañs, cada una tendrá `clientId` igual a `clientId1`.
-
 
 ### Diagrama de la Estructura de Datos
 
