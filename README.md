@@ -146,8 +146,6 @@ Este proyecto usa **Firebase** como base de datos NoSQL, porque es escalable y p
 
 ### Diagrama de la Estructura de Datos
 
-El diagrama a continuación muestra la estructura de colecciones y documentos con algunos casos de ejemplo, así como las referencias entre ellos:
-
 ```
 Firestore
 │
