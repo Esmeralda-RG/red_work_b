@@ -171,7 +171,7 @@ Firestore
 │   └── ...
 │
 ├── Requests
-│   ├── requestId1
+│   ├── requestId1:int
 │   │   ├── clientId: int  (refers to Clients)
 │   │   ├── workerId: int  (refers to Workers)
 │   │   ├── status: string
@@ -179,7 +179,7 @@ Firestore
 │   └── ...
 │
 └── Reviews
-    ├── reviewId1
+    ├── reviewId1:int
     │   ├── requestId: int  (refers to Requests)
     │   ├── clientId: int   (refers to Clients)
     │   ├── workerId: int   (refers to Workers)
