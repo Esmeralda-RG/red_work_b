@@ -91,8 +91,6 @@ Este proyecto usa **Firebase** como base de datos NoSQL, porque es escalable y p
 4. Cada **trabajador** (Workers) puede recibir muchas **reseñas** (Reviews) (1:N).
 5. Cada **cliente** (Clients) puede dejar muchas **reseñas** (Reviews) (1:N).
 
-Claro, aquí tienes un modelado detallado para tu proyecto en Firebase, siguiendo los principios y criterios que mencionaste.
-
 ## Modelado de Datos
 
 #### Colección: `Workers`
