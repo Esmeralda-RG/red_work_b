@@ -99,15 +99,15 @@ Claro, aquí tienes un modelado detallado para tu proyecto en Firebase, siguiend
 
 ```json
 {
-  "id": "workerId1",
-  "name": "John Doe",
-  "job": "Electrician",
-  "experience": 5,
-  "location": "City X",
-  "email": "johndoe@example.com",
-  "password": "hashed_password",
-  "isAvailable": true,
-  "availableTimestamp": "2024-09-15T14:20:00Z"
+  "id": int,
+  "name": string,
+  "job": string,
+  "experience": int,
+  "location": string,
+  "email": string,
+  "password": string,
+  "isAvailable": boolean,
+  "availableTimestamp": date
 }
 ```
 
@@ -115,8 +115,8 @@ Claro, aquí tienes un modelado detallado para tu proyecto en Firebase, siguiend
 
 ```json
 {
-  "id": "clientId1",
-  "name": "Jane Smith"
+  "id": int,
+  "name": string
 }
 ```
 
@@ -124,13 +124,11 @@ Claro, aquí tienes un modelado detallado para tu proyecto en Firebase, siguiend
 
 ```json
 {
-  "id": "requestId1",
-  "clientId": "clientId1",  // Referencia al cliente
-  "workerId": "workerId1",  // Referencia al trabajador
-  "status": "pending",
-  "dateCreated": "2024-09-15T12:30:00Z",
-  "clientName": "Jane Smith",  // Duplicado para facilitar consultas
-  "workerName": "John Doe"     // Duplicado para facilitar consultas
+  "id": int,
+  "clientId": int,  // Referencia al cliente
+  "workerId": int,  // Referencia al trabajador
+  "status": string,
+  "dateCreated": date,
 }
 ```
 
@@ -138,13 +136,13 @@ Claro, aquí tienes un modelado detallado para tu proyecto en Firebase, siguiend
 
 ```json
 {
-  "id": "reviewId1",
-  "requestId": "requestId1",  // Referencia a la solicitud
-  "clientId": "clientId1",    // Referencia al cliente
-  "workerId": "workerId1",    // Referencia al trabajador
-  "rating": 5,
-  "comment": "Great service!",
-  "dateReview": "2024-09-16T14:00:00Z"
+  "id": int,
+  "requestId": int,  // Referencia a la solicitud
+  "clientId": int,    // Referencia al cliente
+  "workerId": int,    // Referencia al trabajador
+  "rating": int,
+  "comment": string,
+  "dateReview": date
 }
 ```
 
@@ -156,40 +154,38 @@ El diagrama a continuación muestra la estructura de colecciones y documentos co
 Firestore
 │
 ├── Workers
-│   ├── workerId1
-│   │   ├── name: "John Doe"
-│   │   ├── job: "Electrician"
-│   │   ├── experience: 5
-│   │   ├── location: "City X"
-│   │   ├── email: "johndoe@example.com"
-│   │   ├── password: "hashed_password"
-│   │   ├── isAvailable: true
-│   │   └── availableTimestamp: "2024-09-15T14:20:00Z"
+│   ├── workerId1:int
+│   │   ├── name: string
+│   │   ├── job: string
+│   │   ├── experience: int
+│   │   ├── location: string
+│   │   ├── email: string
+│   │   ├── password: string
+│   │   ├── isAvailable: boolean
+│   │   └── availableTimestamp: date
 │   └── ...
 │
 ├── Clients
-│   ├── clientId1
-│   │   ├── name: "Jane Smith"
+│   ├── clientId1:int
+│   │   ├── name: string
 │   └── ...
 │
 ├── Requests
 │   ├── requestId1
-│   │   ├── clientId: "clientId1"  (refers to Clients)
-│   │   ├── workerId: "workerId1"  (refers to Workers)
-│   │   ├── status: "pending"
-│   │   ├── dateCreated: "2024-09-15T12:30:00Z"
-│   │   ├── clientName: "Jane Smith"  (duplicated for easy querying)
-│   │   └── workerName: "John Doe"     (duplicated for easy querying)
+│   │   ├── clientId: int  (refers to Clients)
+│   │   ├── workerId: int  (refers to Workers)
+│   │   ├── status: string
+│   │   ├── dateCreated: date
 │   └── ...
 │
 └── Reviews
     ├── reviewId1
-    │   ├── requestId: "requestId1"  (refers to Requests)
-    │   ├── clientId: "clientId1"    (refers to Clients)
-    │   ├── workerId: "workerId1"    (refers to Workers)
-    │   ├── rating: 5
-    │   ├── comment: "Great service!"
-    │   └── dateReview: "2024-09-16T14:00:00Z"
+    │   ├── requestId: int  (refers to Requests)
+    │   ├── clientId: int   (refers to Clients)
+    │   ├── workerId: int   (refers to Workers)
+    │   ├── rating: int
+    │   ├── comment: int
+    │   └── dateReview: date
     └── ...
 ```
 
@@ -216,8 +212,6 @@ import { addData, getData, updateData, deleteData } from '../services/firestoreS
 El archivo `.env` contiene variables de entorno, que son valores clave utilizados por la aplicación durante su ejecución. Estas variables permiten separar la configuración del código, facilitando la gestión de datos sensibles como contraseñas, claves de API, etc. Ademas este archivo tiene que ser diseñado para un entorno local.
 
 ### Archivo `.env.example`
-
-Para que el equipo sepa qué variables debe incluir en su archivo `.env`, puedes crear un archivo `.env.example` con las claves de las variables, pero sin valores sensibles:
 
 ```bash
 # Archivo .env.example para Backend
