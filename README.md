@@ -216,9 +216,6 @@ GOOGLE_APPLICATION_CREDENTIALS=
 > [!IMPORTANT]  
 > Cada desarrollador debe copiar este archivo y renombrarlo como .env, luego rellenar los valores correspondientes.
 
-### Configuración en el código
-
-*explicacion de los scripts
 
 
 
