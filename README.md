@@ -103,7 +103,7 @@ Claro, aquí tienes un modelado detallado para tu proyecto en Firebase, siguiend
   "name": string,
   "job": string,
   "experience": int,
-  "location": string,
+  "location": {Lat: double,Lng: double},
   "email": string,
   "password": string,
   "isAvailable": boolean,
@@ -158,7 +158,7 @@ Firestore
 │   │   ├── name: string
 │   │   ├── job: string
 │   │   ├── experience: int
-│   │   ├── location: string
+│   │   ├── location: {Lat: double,Lng: double}
 │   │   ├── email: string
 │   │   ├── password: string
 │   │   ├── isAvailable: boolean
