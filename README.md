@@ -184,7 +184,7 @@ Firestore
     │   ├── clientId: int   (refers to Clients)
     │   ├── workerId: int   (refers to Workers)
     │   ├── rating: int
-    │   ├── comment: int
+    │   ├── comment: string
     │   └── dateReview: date
     └── ...
 ```
