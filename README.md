@@ -91,6 +91,100 @@ Este proyecto usa **Firebase** como base de datos NoSQL, porque es escalable y p
 4. Cada **trabajador** (Workers) puede recibir muchas **reseñas** (Reviews) (1:N).
 5. Cada **cliente** (Clients) puede dejar muchas **reseñas** (Reviews) (1:N).
 
+## Modelado de Datos
+
+#### Colección: `Workers`
+
+```json
+{
+  "id": int,
+  "name": string,
+  "job": string,
+  "experience": int,
+  "location": {Lat: double,Lng: double},
+  "email": string,
+  "password": string,
+  "isAvailable": boolean,
+  "availableTimestamp": date
+}
+```
+
+#### Colección: `Clients`
+
+```json
+{
+  "id": int,
+  "name": string
+}
+```
+
+#### Colección: `Requests`
+
+```json
+{
+  "id": int,
+  "clientId": int,  // Referencia al cliente
+  "workerId": int,  // Referencia al trabajador
+  "status": string,
+  "dateCreated": date,
+}
+```
+
+#### Colección: `Reviews`
+
+```json
+{
+  "id": int,
+  "requestId": int,  // Referencia a la solicitud
+  "clientId": int,    // Referencia al cliente
+  "workerId": int,    // Referencia al trabajador
+  "rating": int,
+  "comment": string,
+  "dateReview": date
+}
+```
+
+### Diagrama de la Estructura de Datos
+
+```
+Firestore
+│
+├── Workers
+│   ├── workerId1:int
+│   │   ├── name: string
+│   │   ├── job: string
+│   │   ├── experience: int
+│   │   ├── location: {Lat: double,Lng: double}
+│   │   ├── email: string
+│   │   ├── password: string
+│   │   ├── isAvailable: boolean
+│   │   └── availableTimestamp: date
+│   └── ...
+│
+├── Clients
+│   ├── clientId1:int
+│   │   ├── name: string
+│   └── ...
+│
+├── Requests
+│   ├── requestId1:int
+│   │   ├── clientId: int  (refers to Clients)
+│   │   ├── workerId: int  (refers to Workers)
+│   │   ├── status: string
+│   │   ├── dateCreated: date
+│   └── ...
+│
+└── Reviews
+    ├── reviewId1:int
+    │   ├── requestId: int  (refers to Requests)
+    │   ├── clientId: int   (refers to Clients)
+    │   ├── workerId: int   (refers to Workers)
+    │   ├── rating: int
+    │   ├── comment: string
+    │   └── dateReview: date
+    └── ...
+```
+
 ## Uso de `firestoreService.ts`
 
 El archivo `src/services/firestoreService.ts` proporciona funciones para realizar operaciones básicas en Firestore.
@@ -115,8 +209,6 @@ El archivo `.env` contiene variables de entorno, que son valores clave utilizado
 
 ### Archivo `.env.example`
 
-Para que el equipo sepa qué variables debe incluir en su archivo `.env`, puedes crear un archivo `.env.example` con las claves de las variables, pero sin valores sensibles:
-
 ```bash
 # Archivo .env.example para Backend
 GOOGLE_APPLICATION_CREDENTIALS=
@@ -124,9 +216,8 @@ GOOGLE_APPLICATION_CREDENTIALS=
 > [!IMPORTANT]  
 > Cada desarrollador debe copiar este archivo y renombrarlo como .env, luego rellenar los valores correspondientes.
 
-### Configuración en el código
 
-*explicacion de los scripts
+
 
 
 
