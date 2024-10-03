@@ -1,2 +1,13 @@
-const message: string = 'Hello World';
-console.log(message);
+import express  from "express";
+import router from "./routers/router";
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use('/api', router);
+
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
