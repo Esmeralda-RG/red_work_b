@@ -1,26 +1,25 @@
-import { getFirestore, CollectionReference, DocumentData, QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
+import { getFirestore, DocumentData, QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
 import app from "../config/firebase";
 
 const db = getFirestore(app);
 
-export const addData = async (collectionName: string, data: object): Promise<string | undefined> => {
+export const addData = async (collectionName: string, data: object): Promise<string> => {
     try {
         const collectionRef = db.collection(collectionName);
         const docRef = await collectionRef.add(data);
         return docRef.id;
     }catch (e) {
-        console.error("Error adding: ", e);
+        throw e;
     }
 };
 
-export const getData = async (collectionName: string): Promise<any[]> => {
+export const getData = async (collectionName: string): Promise<Object[]> => {
     try {
         const collectionRef = db.collection(collectionName);
         const querySnapshot: QuerySnapshot<DocumentData> = await collectionRef.get();
         return querySnapshot.docs.map((doc: DocumentSnapshot<DocumentData>) => ({ id: doc.id, ...doc.data() }));
     }catch (e) {
-        console.error("Error getting: ", e);
-        return [];
+        throw e;
     }
 };
 
@@ -29,7 +28,7 @@ export const updateData = async (collectionName: string, docId: string, newData:
         const docRef = db.collection(collectionName).doc(docId);
         await docRef.update(newData);
     }catch (e) {
-        console.error("Error updating: ", e);
+        throw e;
     }
 };
 
@@ -38,6 +37,6 @@ export const deleteData = async (collectionName: string, docId: string): Promise
         const docRef = db.collection(collectionName).doc(docId);
         await docRef.delete();
     }catch (e) {
-        console.error("Error deleting: ", e);
+        throw e;
     }
 };
