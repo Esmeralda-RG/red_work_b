@@ -37,3 +37,7 @@ export const getRequestDetails = (req: Request<{ id: string }>, res: Response) =
 export const submitRatings = (req: Request, res: Response) => {
     res.status(201).json({message: 'Submit ratings'});
 }
+
+export const search = (req: Request, res: Response) => {
+    res.status(200).json({message: 'Search'});
+}

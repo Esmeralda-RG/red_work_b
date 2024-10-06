@@ -8,7 +8,8 @@ import {
     getWorkersByCategory,
     createRequest,
     getRequestDetails,
-    submitRatings
+    submitRatings,
+    search
 } from '../controllers/controller';
 
 const router = Router();
@@ -21,6 +22,7 @@ router.post('/workers/register', registerWorker);
 router.post('/workers/:id/availability', updateWorkerAvailability);
 router.get('/workers/available', getAvailableWorkers);
 router.get('/workers/category/:category', getWorkersByCategory);
+router.get('/search', search);
 router.post('/request', createRequest);
 router.get('/request/worker/:id', getRequestDetails);
 router.post('/ratings', submitRatings);
