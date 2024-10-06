@@ -1,21 +1,5 @@
 import {Request, Response} from 'express';
-
-interface RegisterWorkerData {
-    photo: string;
-    fullName: string;
-    job: string;
-    category: string;
-    workImages: string[];
-    location: Location;
-    phoneNumber: string;
-    email: string;
-    password: string;
-}
-
-interface Location {
-    latitude: number;
-    longitude: number;
-}
+import { RegisterWorkerData } from './interfaces/register_worker_data';
 
 export const getAllWorkers = (req: Request, res: Response) => {
     res.status(200).json({message: 'Get all workers'});
