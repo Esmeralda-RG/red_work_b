@@ -13,7 +13,7 @@ export const addData = async (collectionName: string, data: object): Promise<str
     }
 };
 
-export const getData = async (collectionName: string): Promise<Object[]> => {
+export const getData = async (collectionName: string): Promise<object[]> => {
     try {
         const collectionRef = db.collection(collectionName);
         const querySnapshot: QuerySnapshot<DocumentData> = await collectionRef.get();
