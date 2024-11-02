@@ -1,13 +1,39 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData } from './interfaces/register_worker_data';
+import { addData } from '../services/firestoreService';
+import { getData } from '../services/firestoreService';
 
-export const getAllWorkers = (req: Request, res: Response) => {
-    res.status(200).json({message: 'Get all workers'});
+export const getAllWorkers = async (req: Request, res: Response) => {
+    try {
+        const workers = await getData('workers');
+        res.status(200).json(workers);
+    } catch (error) {  
+        console.error(error);
+        res.status(500).json({message: 'Error getting workers'});
+    }
 };
 
-export const registerWorker = (req: Request<{}, {}, RegisterWorkerData>, res: Response) => {
+export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, res: Response) => {
     const {photo, fullName, job, category, workImages, location, phoneNumber, email, password} = req.body as RegisterWorkerData;
-    res.status(201).json({message: 'Register worker'});
+
+    const workerData = {
+        photo,
+        fullName,
+        job,
+        category,
+        workImages,
+        location,
+        phoneNumber,
+        email,
+        password
+    };
+    try {
+        const workerId = await addData('workers', workerData);
+        res.status(201).json({message: 'Worker registered', workerId});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'Error registering worker'});
+    }
 }
 
 export const updateWorkerAvailability = (req: Request<{ id: string }, {}, { availability: boolean }>, res: Response) => {
