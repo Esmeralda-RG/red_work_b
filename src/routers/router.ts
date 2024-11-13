@@ -3,6 +3,7 @@ import Router from 'express';
 import {
     getAllWorkers,
     registerWorker,
+    updateWorker,
     updateWorkerAvailability,
     getAvailableWorkers,
     getWorkersByCategory,
@@ -19,6 +20,7 @@ router.get('/', (req, res) => {
 });
 router.get('/workers', getAllWorkers);
 router.post('/workers/register', registerWorker);
+router.post('/workers/:id/update', updateWorker);
 router.post('/workers/:id/availability', updateWorkerAvailability);
 router.get('/workers/available', getAvailableWorkers);
 router.get('/workers/category/:category', getWorkersByCategory);

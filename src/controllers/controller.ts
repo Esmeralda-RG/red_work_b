@@ -36,6 +36,12 @@ export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, r
     }
 }
 
+export const updateWorker = (req: Request<{ id: string }, {}, RegisterWorkerData>, res: Response) => {
+    const {id} = req.params;
+    const {photo, fullName, job, category, workImages, location, phoneNumber, email, password} = req.body;
+    res.status(200).json({message: `Worker ${id} updated`});
+}
+
 export const updateWorkerAvailability = (req: Request<{ id: string }, {}, { availability: boolean }>, res: Response) => {
     const {id} = req.params;
     const {availability} = req.body;
