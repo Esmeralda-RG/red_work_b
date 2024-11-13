@@ -10,14 +10,13 @@ import {
     createRequest,
     getRequestDetails,
     submitRatings,
-    search
+    search,
+    stadistics
 } from '../controllers/controller';
 
 const router = Router();
 
-router.get('/', (req, res) => {
-    res.status(200).json({message: 'Welcome to the API'});
-});
+router.get('/', stadistics);
 router.get('/workers', getAllWorkers);
 router.post('/workers/register', registerWorker);
 router.post('/workers/:id/update', updateWorker);

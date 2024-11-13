@@ -13,6 +13,17 @@ export const getAllWorkers = async (req: Request, res: Response) => {
     }
 };
 
+export const stadistics = async (req: Request, res: Response) => {
+    try {
+        const workers = await getData('workers');
+        const numberWorkers = workers.length;
+        res.status(200).json({numberWorkers});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'Error getting workers'});
+    }
+}
+
 export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, res: Response) => {
     const {photo, fullName, job, category, workImages, location, phoneNumber, email, password} = req.body as RegisterWorkerData;
 
