@@ -53,6 +53,11 @@ export const updateWorker = (req: Request<{ id: string }, {}, RegisterWorkerData
     res.status(200).json({message: `Worker ${id} updated`});
 }
 
+export const deleteWorker = (req: Request<{ id: string }>, res: Response) => {
+    const {id} = req.params;
+    res.status(200).json({message: `Worker ${id} deleted`});
+}
+
 export const updateWorkerAvailability = (req: Request<{ id: string }, {}, { availability: boolean }>, res: Response) => {
     const {id} = req.params;
     const {availability} = req.body;

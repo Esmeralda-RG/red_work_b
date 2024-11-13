@@ -4,6 +4,7 @@ import {
     getAllWorkers,
     registerWorker,
     updateWorker,
+    deleteWorker,
     updateWorkerAvailability,
     getAvailableWorkers,
     getWorkersByCategory,
@@ -19,7 +20,8 @@ const router = Router();
 router.get('/', stadistics);
 router.get('/workers', getAllWorkers);
 router.post('/workers/register', registerWorker);
-router.post('/workers/:id/update', updateWorker);
+router.put('/workers/:id/update', updateWorker);
+router.delete('/workers/:id/delete', deleteWorker);
 router.post('/workers/:id/availability', updateWorkerAvailability);
 router.get('/workers/available', getAvailableWorkers);
 router.get('/workers/category/:category', getWorkersByCategory);
