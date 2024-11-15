@@ -1,7 +1,6 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData } from './interfaces/register_worker_data';
-import { addData } from '../services/firestoreService';
-import { getData } from '../services/firestoreService';
+import { addData, updateData, getData } from '../services/firestoreService';
 
 export const getAllWorkers = async (req: Request, res: Response) => {
     try {
@@ -47,10 +46,38 @@ export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, r
     }
 }
 
-export const updateWorker = (req: Request<{ id: string }, {}, RegisterWorkerData>, res: Response) => {
-    const {id} = req.params;
-    const {photo, fullName, job, category, workImages, location, phoneNumber, email, password} = req.body;
-    res.status(200).json({message: `Worker ${id} updated`});
+export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWorkerData>, res: Response) => {
+    const { id } = req.params;
+    const { photo, fullName, job, category, workImages, location, phoneNumber, email, password } = req.body;
+
+    const updatedWorkerData = {
+        photo,
+        fullName,
+        job,
+        category,
+        workImages,
+        location,
+        phoneNumber,
+        email,
+        password,
+    };
+
+    const filteredData = Object.fromEntries(
+        Object.entries(updatedWorkerData).filter(([_, value]) => value !== undefined)
+    );
+
+    if (Object.keys(filteredData).length == 0){
+        return res.status(400).json({ message: 'No fields provided to update' });
+    }
+
+    try {
+        await updateData('workers', id, filteredData);
+        
+        res.status(200).json({ meesage: 'Worker ${id} updated successfully'});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating worker'});
+    }
 }
 
 export const deleteWorker = (req: Request<{ id: string }>, res: Response) => {
