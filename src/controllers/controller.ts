@@ -67,13 +67,14 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
     );
 
     if (Object.keys(filteredData).length == 0){
-        return res.status(400).json({ message: 'No fields provided to update' });
+        res.status(400).json({ message: 'No fields provided to update' });
+        return;
     }
 
     try {
         await updateData('workers', id, filteredData);
         
-        res.status(200).json({ meesage: 'Worker ${id} updated successfully'});
+        res.status(200).json({ message: `Worker ${id} updated successfully`});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error updating worker'});
