@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData } from './interfaces/register_worker_data';
-import { addData, updateData, getData } from '../services/firestoreService';
+import { addData, updateData, getData, deleteData } from '../services/firestoreService';
 import { uploadImage } from '../services/photoService';
 
 export const getAllWorkers = async (req: Request, res: Response) => {
@@ -93,10 +93,17 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
     }
 }
 
-export const deleteWorker = (req: Request<{ id: string }>, res: Response) => {
-    const {id} = req.params;
-    res.status(200).json({message: `Worker ${id} deleted`});
+export const deleteWorker = async (req: Request<{ id: string }>, res: Response) => {
+    const { id } = req.params;
+    try {
+        await deleteData('workers', id);
+        res.status(200).json({ message: `Worker ${id} deleted successfully` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting worker' });
+    }
 }
+
 
 export const updateWorkerAvailability = (req: Request<{ id: string }, {}, { availability: boolean }>, res: Response) => {
     const {id} = req.params;
