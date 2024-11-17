@@ -40,12 +40,8 @@ export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, r
         password
     };
     try {
-
-        console.log('workerData', workerData);
-
         const url = await uploadImage(photo, 'workers', phone);
         workerData.photo = url;
-        console.log('worker', workerData);  
         const workerId = await addData('workers', workerData);
         res.status(201).json({message: 'Worker registered', workerId});
     } catch (error) {
