@@ -13,14 +13,21 @@ export const getAllWorkers = async (req: Request, res: Response) => {
     }
 };
 
-export const stadistics = async (req: Request, res: Response) => {
-    try {
+export const initialInfo = async (req: Request, res: Response) => {
+    try{
         const workers = await getData('workers');
         const numberWorkers = workers.length;
-        res.status(200).json({numberWorkers});
-    } catch (error) {
+        const phoneAdmin = process.env.PHONE_NUMBER_ADMIN;
+
+        const workersRegisteredCount = numberWorkers < 1000 ? `${numberWorkers}+` : `${numberWorkers.toString().slice(0, 1)}K+`;
+
+        res.status(200).json({
+            workersRegisteredCount: workersRegisteredCount, 
+            whatsappRegistrationLink: `https://wa.me/${phoneAdmin}?text=Hola%2C%20quiero%20registrarme%20como%20trabajador`,
+        });
+    }catch (error){
         console.error(error);
-        res.status(500).json({message: 'Error getting workers'});
+        res.status(500).json({message: 'Error getting initial info'});
     }
 }
 

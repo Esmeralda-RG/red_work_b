@@ -12,12 +12,12 @@ import {
     getRequestDetails,
     submitRatings,
     search,
-    stadistics
+    initialInfo
 } from '../controllers/controller';
 
 const router = Router();
 
-router.get('/', stadistics);
+router.get('/', initialInfo);
 router.get('/workers', getAllWorkers);
 router.post('/workers/register', registerWorker);
 router.put('/workers/:id/update', updateWorker);
