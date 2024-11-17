@@ -5,7 +5,8 @@ export interface RegisterWorkerData {
     category: string;
     workImages: string[];
     location: Location;
-    phoneNumber: string;
+    phone: string;
+    country: string;
     email: string;
     password: string;
 }

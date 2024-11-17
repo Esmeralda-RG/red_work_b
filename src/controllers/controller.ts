@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData } from './interfaces/register_worker_data';
 import { addData, updateData, getData } from '../services/firestoreService';
+import { uploadImage } from '../services/photoService';
 
 export const getAllWorkers = async (req: Request, res: Response) => {
     try {
@@ -24,7 +25,7 @@ export const stadistics = async (req: Request, res: Response) => {
 }
 
 export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, res: Response) => {
-    const {photo, fullName, job, category, workImages, location, phoneNumber, email, password} = req.body as RegisterWorkerData;
+    const {photo, fullName, job, category, workImages, location, phone, country,  email, password} = req.body as RegisterWorkerData;
 
     const workerData = {
         photo,
@@ -33,11 +34,18 @@ export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, r
         category,
         workImages,
         location,
-        phoneNumber,
+        phone,
+        country,
         email,
         password
     };
     try {
+
+        console.log('workerData', workerData);
+
+        const url = await uploadImage(photo, 'workers', phone);
+        workerData.photo = url;
+        console.log('worker', workerData);  
         const workerId = await addData('workers', workerData);
         res.status(201).json({message: 'Worker registered', workerId});
     } catch (error) {
@@ -48,7 +56,7 @@ export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, r
 
 export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWorkerData>, res: Response) => {
     const { id } = req.params;
-    const { photo, fullName, job, category, workImages, location, phoneNumber, email, password } = req.body;
+    const { photo, fullName, job, category, workImages, location, phone, country, email, password } = req.body;
 
     const updatedWorkerData = {
         photo,
@@ -57,7 +65,8 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
         category,
         workImages,
         location,
-        phoneNumber,
+        phone,
+        country,
         email,
         password,
     };
