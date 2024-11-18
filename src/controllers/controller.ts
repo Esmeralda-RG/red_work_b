@@ -76,8 +76,6 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
         email,
         password,
     };
-    const hashedPassword = await bcrypt.hash(password, 10);
-    updatedWorkerData.password = hashedPassword;
 
     const filteredData = Object.fromEntries(
         Object.entries(updatedWorkerData).filter(([_, value]) => value !== undefined)
