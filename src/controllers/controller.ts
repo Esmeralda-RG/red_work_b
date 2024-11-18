@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import { RegisterWorkerData } from './interfaces/register_worker_data';
 import { addData, updateData, getData, deleteData } from '../services/firestoreService';
 import { uploadImage } from '../services/photoService';
+import bcrypt from 'bcryptjs';
 
 export const getAllWorkers = async (req: Request, res: Response) => {
     try {
@@ -47,6 +48,8 @@ export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, r
         password
     };
     try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        workerData.password = hashedPassword;
         const url = await uploadImage(photo, 'workers', phone);
         workerData.photo = url;
         const workerId = await addData('workers', workerData);
@@ -73,6 +76,8 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
         email,
         password,
     };
+    const hashedPassword = await bcrypt.hash(password, 10);
+    updatedWorkerData.password = hashedPassword;
 
     const filteredData = Object.fromEntries(
         Object.entries(updatedWorkerData).filter(([_, value]) => value !== undefined)
