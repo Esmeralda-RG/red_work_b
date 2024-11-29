@@ -1,13 +1,19 @@
 import {Request, Response} from 'express';
-import { RegisterWorkerData } from './interfaces/register_worker_data';
+import { RegisterWorkerData, Worker } from './interfaces/register_worker_data';
 import { addData, updateData, getData, deleteData } from '../services/firestoreService';
 import { uploadImage } from '../services/photoService';
 import bcrypt from 'bcryptjs';
 
 export const getAllWorkers = async (req: Request, res: Response) => {
     try {
-        const workers = await getData('workers');
-        res.status(200).json(workers);
+        const workers: Worker[] = await getData('workers') as Worker[];
+        const filteredWorkers = workers.map(worker => ({
+            id: worker.id,
+            fullName: worker.fullName,
+            photo: worker.photo,
+            job: worker.job,
+        }));
+        res.status(200).json(filteredWorkers);
     } catch (error) {  
         console.error(error);
         res.status(500).json({message: 'Error getting workers'});
@@ -76,7 +82,7 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
         email,
         password,
     };
-
+    console.log("hola");
     const filteredData = Object.fromEntries(
         Object.entries(updatedWorkerData).filter(([_, value]) => value !== undefined)
     );

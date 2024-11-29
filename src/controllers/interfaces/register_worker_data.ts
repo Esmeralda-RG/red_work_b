@@ -15,3 +15,7 @@ interface Location {
     latitude: number;
     longitude: number;
 }
+
+export interface Worker extends RegisterWorkerData {
+    id: string; 
+}
