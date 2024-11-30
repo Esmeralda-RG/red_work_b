@@ -1,4 +1,4 @@
-import { getFirestore, DocumentData, QuerySnapshot, DocumentSnapshot } from "firebase-admin/firestore";
+import { getFirestore, DocumentData, QuerySnapshot, DocumentSnapshot, CollectionGroup } from "firebase-admin/firestore";
 import app from "../config/firebase";
 
 const db = getFirestore(app);
@@ -22,6 +22,19 @@ export const getData = async (collectionName: string): Promise<object[]> => {
         throw e;
     }
 };
+
+export const getDataById = async (CollectionName: string, id: string): Promise<object | null> => {
+    try {
+        const docRef = db.collection(CollectionName).doc(id);
+        const docSnapshot: DocumentSnapshot = await docRef.get();
+        if (!docSnapshot.exists){
+            return null;
+        }
+        return { id: docSnapshot.id, ...docSnapshot.data() };
+    }catch (e) {
+        throw e;
+    }
+}
 
 export const updateData = async (collectionName: string, docId: string, newData: object): Promise<void> => {
     try {
