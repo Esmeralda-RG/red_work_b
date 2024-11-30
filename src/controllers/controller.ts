@@ -1,7 +1,8 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData, Worker } from './interfaces/register_worker_data';
-import { addData, updateData, getData, deleteData } from '../services/firestoreService';
+import { addData, updateData, getData, deleteData, getDataById } from '../services/firestoreService';
 import { uploadImage } from '../services/photoService';
+import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
 
 export const getAllWorkers = async (req: Request, res: Response) => {
@@ -9,14 +10,31 @@ export const getAllWorkers = async (req: Request, res: Response) => {
         const workers: Worker[] = await getData('workers') as Worker[];
         const filteredWorkers = workers.map(worker => ({
             id: worker.id,
-            fullName: worker.fullName,
+            fullName: capitalizeFullName(worker.fullName),
             photo: worker.photo,
-            job: worker.job,
+            job: capitalizeJob(worker.job)
         }));
         res.status(200).json(filteredWorkers);
     } catch (error) {  
         console.error(error);
         res.status(500).json({message: 'Error getting workers'});
+    }
+};
+
+export const getWorkerById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const worker: Worker = await getDataById('workers', id) as Worker;
+        const filteredWorker = {
+            id: worker.id,
+            fullName: capitalizeFullName(worker.fullName), 
+            photo: worker.photo,
+            job: capitalizeJob(worker.job)
+        };
+        res.status(200).json(filteredWorker);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'Error getting worker'});
     }
 };
 

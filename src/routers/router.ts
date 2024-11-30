@@ -12,13 +12,15 @@ import {
     getRequestDetails,
     submitRatings,
     search,
-    initialInfo
+    initialInfo,
+    getWorkerById
 } from '../controllers/controller';
 
 const router = Router();
 
 router.get('/', initialInfo);
 router.get('/workers', getAllWorkers);
+router.get('/workers/:id', getWorkerById);
 router.post('/workers/register', registerWorker);
 router.put('/workers/:id/update', updateWorker);
 router.delete('/workers/:id/delete', deleteWorker);
