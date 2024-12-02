@@ -1,9 +1,10 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData, Worker } from './interfaces/register_worker_data';
-import { addData, updateData, getData, deleteData, getDataById } from '../services/firestoreService';
+import { addData, updateData, getData, deleteData, getDataById, getDataByPhone} from '../services/firestoreService';
 import { uploadImage } from '../services/photoService';
 import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
+import { messaging } from 'firebase-admin';
 
 export const getAllWorkers = async (req: Request, res: Response) => {
     try {
@@ -37,6 +38,17 @@ export const getWorkerById = async (req: Request, res: Response) => {
         res.status(500).json({message: 'Error getting worker'});
     }
 };
+
+export const getWorkerByPhone = async (req: Request, res: Response) => {
+    try {
+        const { phone } = req.params;
+        const worker: Worker = await getDataByPhone(phone) as Worker;
+        res.status(200).json({ id: worker.id });
+    } catch(error){
+        console.error(error);
+        res.status(500).json({message: 'Error getting worker by phone'});
+    }
+}
 
 export const initialInfo = async (req: Request, res: Response) => {
     try{

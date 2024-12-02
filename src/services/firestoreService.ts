@@ -1,5 +1,6 @@
 import { getFirestore, DocumentData, QuerySnapshot, DocumentSnapshot, CollectionGroup } from "firebase-admin/firestore";
 import app from "../config/firebase";
+import { query } from "express";
 
 const db = getFirestore(app);
 
@@ -32,6 +33,21 @@ export const getDataById = async (CollectionName: string, id: string): Promise<o
         }
         return { id: docSnapshot.id, ...docSnapshot.data() };
     }catch (e) {
+        throw e;
+    }
+}
+
+export const getDataByPhone = async (phone: string): Promise<Object | null> => {
+    try {
+        console.log(`Buscando trabajador con teléfono: ${phone}`);
+        const workerRef = db.collection('workers');
+        const querySnapshot = await workerRef.where('phone','==', phone).get();
+        if (querySnapshot.empty){
+            return null;
+        }
+        const workerData = querySnapshot.docs[0];
+        return { id: workerData.id, ...workerData.data()};
+    } catch(e) {
         throw e;
     }
 }
