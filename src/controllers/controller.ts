@@ -54,7 +54,13 @@ export const getWorkersByCategory = async (req: Request<{ category: string }>, r
     try {
         const { category } = req.params;
         const workers: Worker[] = await getDataByCategory(category) as Worker[];
-        res.status(200).json({ workers });
+        const filteredWorkers = workers.map(worker => ({
+            id: worker.id,
+            fullName: capitalizeFullName(worker.fullName),
+            photo: worker.photo,
+            job: capitalizeJob(worker.job)
+        }));
+        res.status(200).json(filteredWorkers);
     } catch(error){
         console.error(error)
         res.status(500).json({ meesage: 'Error retrieving workers'});
