@@ -3,15 +3,15 @@ import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'redwork89@gmail.com', // Cambia esto por tu correo de Gmail
-    pass: 'iswh ghws giap optz', // Cambia esto por la contraseña de aplicación generada
+    user: 'redwork89@gmail.com', 
+    pass: 'iswh ghws giap optz', 
   },
 });
 
 export async function sendEmail(to: string, subject: string, html: string): Promise<void> {
   try {
     const info = await transporter.sendMail({
-      from: '"RedWork Team" <redwork89@gmail.com>', // Cambia esto por tu nombre y correo de Gmail
+      from: '"RedWork Team" <redwork89@gmail.com>', 
       to,
       subject,
       html,
