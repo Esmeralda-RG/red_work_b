@@ -39,7 +39,6 @@ export const getDataById = async (CollectionName: string, id: string): Promise<o
 
 export const getDataByPhone = async (phone: string): Promise<Object | null> => {
     try {
-        console.log(`Buscando trabajador con teléfono: ${phone}`);
         const workerRef = db.collection('workers');
         const querySnapshot = await workerRef.where('phone','==', phone).get();
         if (querySnapshot.empty){
@@ -51,6 +50,23 @@ export const getDataByPhone = async (phone: string): Promise<Object | null> => {
         throw e;
     }
 }
+
+export const getDataByCategory = async (category: string): Promise<object[]> => {
+    try {
+        const workersRef = db.collection('workers');
+        const querySnapshot = await workersRef.where('category', '==', category).get();
+        if (querySnapshot.empty) {
+            return [];
+        }
+        return querySnapshot.docs.map((doc: DocumentSnapshot<DocumentData>) => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+    } catch (e) {
+        throw e;
+    }
+};
+
 
 export const updateData = async (collectionName: string, docId: string, newData: object): Promise<void> => {
     try {
