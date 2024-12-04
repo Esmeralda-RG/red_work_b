@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData, Worker } from './interfaces/register_worker_data';
-import { addData, updateData, getData, deleteData, getDataById, getDataByPhone} from '../services/firestoreService';
+import { addData, updateData, getData, deleteData, getDataById, getDataByPhone, getDataByCategory } from '../services/firestoreService';
 import { uploadImage } from '../services/photoService';
 import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
@@ -87,6 +87,23 @@ export const getWorkerByPhone = async (req: Request, res: Response) => {
     } catch(error){
         console.error(error);
         res.status(500).json({message: 'Error getting worker by phone'});
+    }
+}
+
+export const getWorkersByCategory = async (req: Request<{ category: string }>, res: Response) => {
+    try {
+        const { category } = req.params;
+        const workers: Worker[] = await getDataByCategory(category) as Worker[];
+        const filteredWorkers = workers.map(worker => ({
+            id: worker.id,
+            fullName: capitalizeFullName(worker.fullName),
+            photo: worker.photo,
+            job: capitalizeJob(worker.job)
+        }));
+        res.status(200).json(filteredWorkers);
+    } catch(error){
+        console.error(error)
+        res.status(500).json({ meesage: 'Error retrieving workers'});
     }
 }
 
@@ -192,11 +209,6 @@ export const updateWorkerAvailability = (req: Request<{ id: string }, {}, { avai
 
 export const getAvailableWorkers = (req: Request, res: Response) => {
     res.status(200).json({message: 'Get available workers'});
-}
-
-export const getWorkersByCategory = (req: Request<{ category: string }, {}, {}>, res: Response) => {
-    const {category} = req.params;
-    res.status(200).json({message: `Get workers in category: ${category}`});
 }
 
 export const createRequest = (req: Request, res: Response) => {
