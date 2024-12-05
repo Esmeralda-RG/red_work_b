@@ -50,20 +50,35 @@ export const getWorkerByPhone = async (req: Request, res: Response) => {
     }
 }
 
-export const getWorkersByCategory = async (req: Request<{ category: string }>, res: Response) => {
+export const getWorkersByCategoryAndSearch = async (req: Request, res: Response) => {
     try {
         const { category } = req.params;
-        const workers: Worker[] = await getDataByCategory(category) as Worker[];
-        const filteredWorkers = workers.map(worker => ({
+        const search: string | undefined = req.query.search as string;
+        let workers: Worker[] = await getDataByCategory(category) as Worker[];
+        let filteredWorkers = workers.map(worker => ({
             id: worker.id,
             fullName: capitalizeFullName(worker.fullName),
             photo: worker.photo,
             job: capitalizeJob(worker.job)
-        }));
+        })).filter(worker => {
+            if (search) {
+                return worker.job.toLowerCase().includes(search.toLowerCase());
+            }
+            return true;
+        });
+
+        if (filteredWorkers.length === 0 && search) {
+            filteredWorkers = workers.map(worker => ({
+                id: worker.id,
+                fullName: capitalizeFullName(worker.fullName),
+                photo: worker.photo,
+                job: capitalizeJob(worker.job)
+            }));
+        }
         res.status(200).json(filteredWorkers);
-    } catch(error){
-        console.error(error)
-        res.status(500).json({ meesage: 'Error retrieving workers'});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving workers' });
     }
 }
 
@@ -88,7 +103,7 @@ export const initialInfo = async (req: Request, res: Response) => {
 export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, res: Response) => {
     const {photo, fullName, job, category, workImages, location, phone, country,  email, password} = req.body as RegisterWorkerData;
 
-    const workerData = {
+    const workerData: RegisterWorkerData = {
         photo,
         fullName,
         job,
@@ -100,6 +115,7 @@ export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, r
         email,
         password
     };
+
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         workerData.password = hashedPassword;
@@ -117,7 +133,7 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
     const { id } = req.params;
     const { photo, fullName, job, category, workImages, location, phone, country, email, password } = req.body;
 
-    const updatedWorkerData = {
+    const updatedWorkerData: RegisterWorkerData = {
         photo,
         fullName,
         job,
@@ -129,25 +145,31 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
         email,
         password,
     };
-    console.log("hola");
+
     const filteredData = Object.fromEntries(
         Object.entries(updatedWorkerData).filter(([_, value]) => value !== undefined)
     );
 
-    if (Object.keys(filteredData).length == 0){
+    if (Object.keys(filteredData).length === 0) {
         res.status(400).json({ message: 'No fields provided to update' });
         return;
     }
 
+    if (filteredData.photo) {
+        const url = await uploadImage(photo, 'workers', phone);
+        filteredData.photo = url;
+    }
+
     try {
         await updateData('workers', id, filteredData);
-        
-        res.status(200).json({ message: `Worker ${id} updated successfully`});
+        res.status(200).json({ message: `Worker ${id} updated successfully` });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error updating worker'});
+        res.status(500).json({ message: 'Error updating worker' });
     }
-}
+};
+
+
 
 export const deleteWorker = async (req: Request<{ id: string }>, res: Response) => {
     const { id } = req.params;

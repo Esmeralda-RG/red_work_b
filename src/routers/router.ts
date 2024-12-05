@@ -7,7 +7,7 @@ import {
     deleteWorker,
     updateWorkerAvailability,
     getAvailableWorkers,
-    getWorkersByCategory,
+    getWorkersByCategoryAndSearch,
     createRequest,
     getRequestDetails,
     submitRatings,
@@ -28,7 +28,7 @@ router.put('/workers/:id/update', updateWorker);
 router.delete('/workers/:id/delete', deleteWorker);
 router.post('/workers/:id/availability', updateWorkerAvailability);
 router.get('/workers/available', getAvailableWorkers);
-router.get('/workers/category/:category', getWorkersByCategory);
+router.get('/workers/category/:category', getWorkersByCategoryAndSearch);
 router.get('/search', search);
 router.post('/request', createRequest);
 router.get('/request/worker/:id', getRequestDetails);
