@@ -214,7 +214,7 @@ El archivo `.env` contiene variables de entorno, que son valores clave utilizado
 GOOGLE_APPLICATION_CREDENTIALS=
 ```
 > [!IMPORTANT]  
-> Cada desarrollador debe copiar este archivo y renombrarlo como .env, luego rellenar los valores correspondientes.
+> Cada desarrollador debe  copiar este archivo y renombrarlo como .env, luego rellenar los valores correspondientes.
 
 
 

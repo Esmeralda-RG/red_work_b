@@ -5,6 +5,9 @@ import { uploadImage } from '../services/photoService';
 import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
 import { messaging } from 'firebase-admin';
+import { sendEmail } from '../services/emailService';
+
+
 
 export const getAllWorkers = async (req: Request, res: Response) => {
     try {
@@ -39,10 +42,47 @@ export const getWorkerById = async (req: Request, res: Response) => {
     }
 };
 
+export const getWorkerEmailById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        // Obtener el trabajador desde la base de datos
+        const worker: Worker = await getDataById('workers', id) as Worker;
+
+        if (!worker) {
+            res.status(404).json({ message: 'Worker not found' });
+            return;
+        }
+
+        const subject = 'Enlace para restablecer contraseña';
+        const logoUrl = 'https://res.cloudinary.com/dlq7gkrvq/image/upload/f_auto,q_auto/bt9d54drdkja28ws2klj'; 
+        const resetLink = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'; 
+
+        const htmlContent = `
+        <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
+            <img src="${logoUrl}" alt="RedWork Logo" style="width: 150px; margin-bottom: 20px;">
+            <h2>Hola ${worker.fullName},</h2>
+            <p>Recibimos una solicitud para restablecer tu contraseña de RedWork.</p>
+            <p>Ingresa al siguiente enlace para ingresar tu nueva contraseña:</p>
+            <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Restablecer Contraseña</a>
+            <p style="margin-top: 20px;">Si no solicitaste este cambio, puedes ignorar este correo.</p>
+        </div>
+        `;
+        // Enviar el correo
+        await sendEmail('pedro.bernal@correounivalle.edu.co', subject, htmlContent);
+
+        res.status(200).json({ message: 'Email sent successfully', worker });
+    } catch (error) {
+        console.error('Error getting worker email by id:', error);
+        res.status(500).json({ message: 'Error getting worker email by id' });
+    }
+};
+
 export const getWorkerByPhone = async (req: Request, res: Response) => {
     try {
         const { phone } = req.params;
         const worker: Worker = await getDataByPhone(phone) as Worker;
+
         res.status(200).json({ id: worker.id });
     } catch(error){
         console.error(error);
