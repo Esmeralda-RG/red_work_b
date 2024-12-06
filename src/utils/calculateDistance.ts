@@ -1,14 +1,9 @@
-import { Worker } from '../controllers/interfaces/register_worker_data';
-
 function deg2rad(deg: number) {
     return deg * (Math.PI / 180);
 }
 
-export const calculateDistance = (worker: Worker, clientLatitude: number, clientLongitude: number) => {
+export const calculateDistance = (workerLatitude: number, workerLongitude:number, clientLatitude: number, clientLongitude: number) => {
     const earthRadius = 6371; //Earth radius in km
-
-    const workerLatitude = worker.location.latitude;
-    const workerLongitude = worker.location.longitude;
 
     const latDistance = deg2rad(clientLatitude - workerLatitude);
     const lonDistance = deg2rad(clientLongitude - workerLongitude);
@@ -21,8 +16,6 @@ export const calculateDistance = (worker: Worker, clientLatitude: number, client
     const distance = earthRadius * c;
 
     return {
-        workerId: worker.id,
-        workerName: worker.fullName, 
         distance: parseFloat(distance.toFixed(2)), 
     };
 };
