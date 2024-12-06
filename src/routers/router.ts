@@ -15,8 +15,7 @@ import {
     initialInfo,
     getWorkerById,
     getWorkerByPhone,
-    getWorkerEmailById,
-    getDistancesFromWorkersToClient
+    getWorkerEmailById
 } from '../controllers/controller';
 
 const router = Router();
@@ -36,6 +35,5 @@ router.post('/request', createRequest);
 router.get('/request/worker/:id', getRequestDetails);
 router.post('/ratings', submitRatings);
 router.get('/workers/email/:id', getWorkerEmailById);
-router.get('/distances', getDistancesFromWorkersToClient);
 
 export default router;
