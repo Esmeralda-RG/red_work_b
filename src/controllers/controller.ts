@@ -48,7 +48,6 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        // Obtener el trabajador desde la base de datos
         const worker: Worker = await getDataById('workers', id) as Worker;
 
         if (!worker) {
@@ -70,8 +69,8 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
             <p style="margin-top: 20px;">Si no solicitaste este cambio, puedes ignorar este correo.</p>
         </div>
         `;
-        // Enviar el correo
-        await sendEmail('pedro.bernal@correounivalle.edu.co', subject, htmlContent);
+
+        await sendEmail(worker.email, subject, htmlContent);
 
         res.status(200).json({ message: 'Email sent successfully', worker });
     } catch (error) {
@@ -79,6 +78,54 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error getting worker email by id' });
     }
 };
+
+function deg2rad(deg: number) {
+    return deg * (Math.PI / 180);
+}
+
+export const getDistancesFromWorkersToClient = async (req: Request, res: Response) => {
+    try {
+        const { clientLatitude, clientLongitude } = req.body;
+
+        const workers: Worker[] = await getData('workers') as Worker[];
+
+        const earthRadius = 6371.137; //Earth radius in km
+
+        const distances = workers.map(worker => {
+            const workerLatitude = worker.location.latitude;
+            const workerLongitude = worker.location.longitude;
+
+            const latDistance = deg2rad(clientLatitude - workerLatitude);
+            const lonDistance = deg2rad(clientLongitude - workerLongitude);
+
+            // Haversine formula
+            const a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
+                      Math.cos(deg2rad(workerLatitude)) * Math.cos(deg2rad(clientLatitude)) *
+                      Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = earthRadius * c;
+
+            return {
+                workerId: worker.id,
+                workerName: worker.fullName, 
+                distance: parseFloat(distance.toFixed(2)), 
+            };
+        });
+
+        distances.sort((a, b) => a.distance - b.distance);
+
+        res.status(200).json({
+            message: 'Distances calculated successfully',
+            distances,
+        });
+    } catch (error) {
+        console.error('Error calculating distances:', error);
+        res.status(500).json({ message: 'Error calculating distances, try later' });
+    }
+};
+
+
+
 
 export const getWorkerByPhone = async (req: Request, res: Response) => {
     try {
