@@ -27,7 +27,7 @@ router.get('/workers/phone/:phone', getWorkerByPhone);
 router.post('/workers/register', registerWorker);
 router.put('/workers/:id/update', updateWorker);
 router.delete('/workers/:id/delete', deleteWorker);
-router.post('/workers/:id/availability', updateWorkerAvailability);
+router.put('/workers/availability', updateWorkerAvailability);
 router.get('/workers/available', getAvailableWorkers);
 router.get('/workers/category/:category', getWorkersByCategoryAndSearch);
 router.get('/search', search);

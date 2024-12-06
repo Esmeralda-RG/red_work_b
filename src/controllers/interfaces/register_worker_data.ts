@@ -18,4 +18,5 @@ interface Location {
 
 export interface Worker extends RegisterWorkerData {
     id: string; 
+    isAvailable: boolean;
 }

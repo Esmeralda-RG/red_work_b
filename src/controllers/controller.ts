@@ -1,11 +1,12 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData, Worker } from './interfaces/register_worker_data';
-import { addData, updateData, getData, deleteData, getDataById, getDataByPhone, getDataByCategory } from '../services/firestoreService';
+import { addData, updateData, getData, deleteData, getDataById, getDataByPhone, getDataByCategory, createRequestInFirebase } from '../services/firestoreService';
 import { uploadImage } from '../services/photoService';
 import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
 import { messaging } from 'firebase-admin';
 import { sendEmail } from '../services/emailService';
+import { METHODS } from 'http';
 
 
 
@@ -99,7 +100,8 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
             id: worker.id,
             fullName: capitalizeFullName(worker.fullName),
             photo: worker.photo,
-            job: capitalizeJob(worker.job)
+            job: capitalizeJob(worker.job),
+            phone: worker.phone
         })).filter(worker => {
             if (search) {
                 return worker.job.toLowerCase().includes(search.toLowerCase());
@@ -112,9 +114,23 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
                 id: worker.id,
                 fullName: capitalizeFullName(worker.fullName),
                 photo: worker.photo,
-                job: capitalizeJob(worker.job)
-            }));
-        }
+                job: capitalizeJob(worker.job),
+                phone: worker.phone
+            }))};
+        const message = "Hola, alguien está haciendo una búsqueda que se ajusta a tu perfil. ¿Deseas notificar tu disponibilidad? \n1. Sí \n2. No";
+        filteredWorkers.map(async worker => {
+            try {
+                await fetch('http://localhost:3001/api/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phone: worker.phone, country: '57', message: message, userType: 'worker', typeRequest: 'confirm' }),
+                });
+            } catch (error) {
+                console.error(`Error sending message to worker ${worker.id}:`, error);
+            }
+        });
         res.status(200).json(filteredWorkers);
     } catch (error) {
         console.error(error);
@@ -223,19 +239,55 @@ export const deleteWorker = async (req: Request<{ id: string }>, res: Response) 
 }
 
 
-export const updateWorkerAvailability = (req: Request<{ id: string }, {}, { availability: boolean }>, res: Response) => {
-    const {id} = req.params;
-    const {availability} = req.body;
-    res.status(200).json({message: `Worker ${id} availability updated to ${availability}`});
-}
+export const updateWorkerAvailability = async (req: Request, res: Response) => {
+    try {
+       const { phone, isAvailable } = req.body;
+       const worker: Worker = await getDataByPhone(phone) as Worker;
+  
+        if (!worker) {
+        res.status(404).json({ message: 'Worker not found' });
+        return;
+        }
+  
+      worker.isAvailable = isAvailable;
+      await updateData('workers', worker.id, { isAvailable });
+  
+      res.status(200).json({ message: 'Availability updated successfully' });
+    } catch (error) {
+      console.error('Error updating availability:', error);
+      res.status(500).json({ message: 'Error updating availability' });
+    }
+  };
+  
 
 export const getAvailableWorkers = (req: Request, res: Response) => {
     res.status(200).json({message: 'Get available workers'});
 }
 
-export const createRequest = (req: Request, res: Response) => {
-    res.status(201).json({message: 'Create request'});
-}
+export const createRequest = async (req: Request, res: Response) => {
+    try {
+        const { phoneNumberClient, phoneNumberWorker } = req.body;  
+        const clientName = req.body.clientName;  
+
+        if (!phoneNumberClient || !phoneNumberWorker || !clientName) {
+            res.status(400).json({ message: 'Faltan datos requeridos' });
+        }
+        const requestData = {
+            clientName,
+            phoneNumberClient,
+            phoneNumberWorker,
+            status: 'pending', 
+            createdAt: new Date(),  
+        };
+
+        const requestId = await createRequestInFirebase(requestData);
+
+        res.status(201).json({ message: 'Solicitud creada exitosamente'});
+    } catch (error) {
+        console.error('Error al crear la solicitud:', error);
+        res.status(500).json({ message: 'Error al crear la solicitud', error });
+    }
+};
 
 export const getRequestDetails = (req: Request<{ id: string }>, res: Response) => {
     const {id} = req.params;

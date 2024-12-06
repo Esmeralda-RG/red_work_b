@@ -14,6 +14,15 @@ export const addData = async (collectionName: string, data: object): Promise<str
     }
 };
 
+export const createRequestInFirebase = async (data: any) => {
+    try {
+        const requestRef = await db.collection('requests').add(data);
+        return requestRef.id; 
+    } catch (e) {
+        throw e;
+    }
+};
+
 export const getData = async (collectionName: string): Promise<object[]> => {
     try {
         const collectionRef = db.collection(collectionName);
