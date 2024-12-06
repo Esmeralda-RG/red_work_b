@@ -7,6 +7,7 @@ import bcrypt from 'bcryptjs';
 import { messaging } from 'firebase-admin';
 import { sendEmail } from '../services/emailService';
 import { METHODS } from 'http';
+import { hostService } from '../config/config';
 
 
 
@@ -101,7 +102,8 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
             fullName: capitalizeFullName(worker.fullName),
             photo: worker.photo,
             job: capitalizeJob(worker.job),
-            phone: worker.phone
+            phone: worker.phone,
+            isAvailable: worker.isAvailable
         })).filter(worker => {
             if (search) {
                 return worker.job.toLowerCase().includes(search.toLowerCase());
@@ -115,12 +117,13 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
                 fullName: capitalizeFullName(worker.fullName),
                 photo: worker.photo,
                 job: capitalizeJob(worker.job),
-                phone: worker.phone
+                phone: worker.phone,
+                isAvailable: worker.isAvailable
             }))};
         const message = "Hola, alguien está haciendo una búsqueda que se ajusta a tu perfil. ¿Deseas notificar tu disponibilidad? \n1. Sí \n2. No";
         filteredWorkers.map(async worker => {
             try {
-                await fetch('http://localhost:3001/api/send-message', {
+                await fetch(`${hostService}/api/send-message`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
