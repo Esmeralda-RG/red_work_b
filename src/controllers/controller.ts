@@ -4,9 +4,7 @@ import { addData, updateData, getData, deleteData, getDataById, getDataByPhone, 
 import { uploadImage } from '../services/photoService';
 import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
-import { messaging } from 'firebase-admin';
 import { sendEmail } from '../services/emailService';
-import { METHODS } from 'http';
 import { hostService } from '../config/config';
 
 
