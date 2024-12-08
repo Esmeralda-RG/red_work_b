@@ -7,6 +7,7 @@ import bcrypt from 'bcryptjs';
 import { sendEmail } from '../services/emailService';
 import { hostService, host } from '../config/config';
 import SocketsClients from '../sockes';
+import { calculateDistance } from '../utils/calculateDistance';
 
 
 
@@ -34,7 +35,8 @@ export const getWorkerById = async (req: Request, res: Response) => {
             id: worker.id,
             fullName: capitalizeFullName(worker.fullName), 
             photo: worker.photo,
-            job: capitalizeJob(worker.job)
+            job: capitalizeJob(worker.job),
+            workImages: worker.workImages,
         };
         res.status(200).json(filteredWorker);
     } catch (error) {
@@ -47,7 +49,6 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        // Obtener el trabajador desde la base de datos
         const worker: Worker = await getDataById('workers', id) as Worker;
 
         if (!worker) {
@@ -69,8 +70,8 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
             <p style="margin-top: 20px;">Si no solicitaste este cambio, puedes ignorar este correo.</p>
         </div>
         `;
-        // Enviar el correo
-        await sendEmail('pedro.bernal@correounivalle.edu.co', subject, htmlContent);
+
+        await sendEmail(worker.email, subject, htmlContent);
 
         res.status(200).json({ message: 'Email sent successfully', worker });
     } catch (error) {
@@ -94,17 +95,24 @@ export const getWorkerByPhone = async (req: Request, res: Response) => {
 export const getWorkersByCategoryAndSearch = async (req: Request, res: Response) => {
     try {
         const { category } = req.params;
+        const {latitude, longitude } = req.query;
         const search: string | undefined = req.query.search as string;
         const idClient = new Date().getTime().toString();
         let workers: Worker[] = await getDataByCategory(category) as Worker[];
         const sockes = SocketsClients.getInstance();
+        
+        
+
+
+
         let filteredWorkers = workers.map(worker => ({
             id: worker.id,
             fullName: capitalizeFullName(worker.fullName),
             photo: worker.photo,
             job: capitalizeJob(worker.job),
             phone: worker.phone,
-            isAvailable: worker.isAvailable
+            isAvailable: worker.isAvailable,
+            distance: calculateDistance(worker.location.latitude, worker.location.longitude, 4.60971, -74.08175)
         })).filter(worker => {
             if (search) {
                 return worker.job.toLowerCase().includes(search.toLowerCase());
@@ -119,7 +127,8 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
                 photo: worker.photo,
                 job: capitalizeJob(worker.job),
                 phone: worker.phone,
-                isAvailable: worker.isAvailable
+                isAvailable: worker.isAvailable,
+                distance: calculateDistance(worker.location.latitude, worker.location.longitude, 4.60971, -74.08175)
             }))};
         const message = "Hola, alguien está haciendo una búsqueda que se ajusta a tu perfil. ¿Deseas notificar tu disponibilidad? \n1. Sí \n2. No";
         filteredWorkers.map(async worker => {
@@ -136,6 +145,7 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
             }
         }); 
         sockes.createClient(idClient,filteredWorkers.map((worker) => worker.id));
+        
         res.status(200).json({
             refreshResult: host,
             client: idClient,
@@ -167,14 +177,14 @@ export const initialInfo = async (req: Request, res: Response) => {
 }
 
 export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, res: Response) => {
-    const {photo, fullName, job, category, workImages, location, phone, country,  email, password} = req.body as RegisterWorkerData;
+    const { photo, fullName, job, category, workImages, location, phone, country, email, password } = req.body as RegisterWorkerData;
 
     const workerData: RegisterWorkerData = {
         photo,
         fullName,
         job,
         category,
-        workImages,
+        workImages: [],
         location,
         phone,
         country,
@@ -185,13 +195,20 @@ export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, r
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         workerData.password = hashedPassword;
-        const url = await uploadImage(photo, 'workers', phone);
-        workerData.photo = url;
+
+        const photoUrl = await uploadImage(photo, 'workers', phone);
+        workerData.photo = photoUrl;
+        if (workImages.length > 0) {
+            for (const image of workImages) {
+                const url = await uploadImage(image, 'workers', `${phone}-${Date.now()}`);
+                workerData.workImages.push(url);
+            }
+        }
         const workerId = await addData('workers', workerData);
-        res.status(201).json({message: 'Worker registered', workerId});
+        res.status(201).json({ message: 'Worker registered', workerId });
     } catch (error) {
         console.error(error);
-        res.status(500).json({message: 'Error registering worker'});
+        res.status(500).json({ message: 'Error registering worker' });
     }
 }
 
