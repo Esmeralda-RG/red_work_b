@@ -158,14 +158,14 @@ export const initialInfo = async (req: Request, res: Response) => {
 }
 
 export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, res: Response) => {
-    const {photo, fullName, job, category, workImages, location, phone, country,  email, password} = req.body as RegisterWorkerData;
+    const { photo, fullName, job, category, workImages, location, phone, country, email, password } = req.body as RegisterWorkerData;
 
     const workerData: RegisterWorkerData = {
         photo,
         fullName,
         job,
         category,
-        workImages,
+        workImages: [],
         location,
         phone,
         country,
@@ -176,13 +176,20 @@ export const registerWorker = async (req: Request<{}, {}, RegisterWorkerData>, r
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         workerData.password = hashedPassword;
-        const url = await uploadImage(photo, 'workers', phone);
-        workerData.photo = url;
+
+        const photoUrl = await uploadImage(photo, 'workers', phone);
+        workerData.photo = photoUrl;
+        if (workImages.length > 0) {
+            for (const image of workImages) {
+                const url = await uploadImage(image, 'workers', `${phone}-${Date.now()}`);
+                workerData.workImages.push(url);
+            }
+        }
         const workerId = await addData('workers', workerData);
-        res.status(201).json({message: 'Worker registered', workerId});
+        res.status(201).json({ message: 'Worker registered', workerId });
     } catch (error) {
         console.error(error);
-        res.status(500).json({message: 'Error registering worker'});
+        res.status(500).json({ message: 'Error registering worker' });
     }
 }
 
