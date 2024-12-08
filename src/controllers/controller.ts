@@ -36,7 +36,8 @@ export const getWorkerById = async (req: Request, res: Response) => {
             id: worker.id,
             fullName: capitalizeFullName(worker.fullName), 
             photo: worker.photo,
-            job: capitalizeJob(worker.job)
+            job: capitalizeJob(worker.job),
+            workImages: worker.workImages,
         };
         res.status(200).json(filteredWorker);
     } catch (error) {
