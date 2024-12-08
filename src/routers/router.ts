@@ -6,17 +6,19 @@ import {
     updateWorker,
     deleteWorker,
     updateWorkerAvailability,
-    getAvailableWorkers,
     getWorkersByCategoryAndSearch,
-    createRequest,
-    getRequestDetails,
-    submitRatings,
-    search,
     initialInfo,
     getWorkerById,
     getWorkerByPhone,
     getWorkerEmailById
 } from '../controllers/controller';
+
+import {
+    createRequest,
+    getRequestDetails,
+    submitRatings,
+    search,
+} from '../controllers/controllerRequest';
 
 const router = Router();
 
@@ -28,7 +30,6 @@ router.post('/workers/register', registerWorker);
 router.put('/workers/:id/update', updateWorker);
 router.delete('/workers/:id/delete', deleteWorker);
 router.put('/workers/availability', updateWorkerAvailability);
-router.get('/workers/available', getAvailableWorkers);
 router.get('/workers/category/:category', getWorkersByCategoryAndSearch);
 router.get('/search', search);
 router.post('/request', createRequest);

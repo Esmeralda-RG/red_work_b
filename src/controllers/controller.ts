@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData, Worker } from './interfaces/register_worker_data';
-import { addData, updateData, getData, deleteData, getDataById, getDataByPhone, getDataByCategory, createRequestInFirebase } from '../services/firestoreService';
+import { addData, updateData, getData, deleteData, getDataById, getDataByPhone, getDataByCategory} from '../services/firestoreService';
 import { uploadImage } from '../services/photoService';
 import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
@@ -100,10 +100,6 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
         const idClient = new Date().getTime().toString();
         let workers: Worker[] = await getDataByCategory(category) as Worker[];
         const sockes = SocketsClients.getInstance();
-        
-        
-
-
 
         let filteredWorkers = workers.map(worker => ({
             id: worker.id,
@@ -252,8 +248,6 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
     }
 };
 
-
-
 export const deleteWorker = async (req: Request<{ id: string }>, res: Response) => {
     const { id } = req.params;
     try {
@@ -269,7 +263,6 @@ export const deleteWorker = async (req: Request<{ id: string }>, res: Response) 
         res.status(500).json({ message: 'Error deleting worker' });
     }
 }
-
 
 export const updateWorkerAvailability = async (req: Request, res: Response) => {
     try {
@@ -293,45 +286,3 @@ export const updateWorkerAvailability = async (req: Request, res: Response) => {
     }
   };
   
-
-export const getAvailableWorkers = (req: Request, res: Response) => {
-    res.status(200).json({message: 'Get available workers'});
-}
-
-export const createRequest = async (req: Request, res: Response) => {
-    try {
-        const { phoneNumberClient, phoneNumberWorker } = req.body;  
-        const clientName = req.body.clientName;  
-
-        if (!phoneNumberClient || !phoneNumberWorker || !clientName) {
-            res.status(400).json({ message: 'Faltan datos requeridos' });
-        }
-        const requestData = {
-            clientName,
-            phoneNumberClient,
-            phoneNumberWorker,
-            status: 'pending', 
-            createdAt: new Date(),  
-        };
-
-        const requestId = await createRequestInFirebase(requestData);
-
-        res.status(201).json({ message: 'Solicitud creada exitosamente'});
-    } catch (error) {
-        console.error('Error al crear la solicitud:', error);
-        res.status(500).json({ message: 'Error al crear la solicitud', error });
-    }
-};
-
-export const getRequestDetails = (req: Request<{ id: string }>, res: Response) => {
-    const {id} = req.params;
-    res.status(200).json({message: `Get request details for ID: ${id}`});
-}
-
-export const submitRatings = (req: Request, res: Response) => {
-    res.status(201).json({message: 'Submit ratings'});
-}
-
-export const search = (req: Request, res: Response) => {
-    res.status(200).json({message: 'Search'});
-}
