@@ -16,9 +16,7 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
       subject,
       html,
     });
-
-    console.log('Email sent successfully:', info.messageId);
-  } catch (err) {
-    console.error('Error sending email:', err);
+  } catch (error) {
+    console.error('Error sending email:', error);
   }
 }

@@ -63,20 +63,18 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
         const htmlContent = `
         <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
             <img src="${logoUrl}" alt="RedWork Logo" style="width: 150px; margin-bottom: 20px;">
-            <h2>Hola ${worker.fullName},</h2>
+            <h2>Hola ${capitalizeFullName(worker.fullName)},</h2>
             <p>Recibimos una solicitud para restablecer tu contraseña de RedWork.</p>
             <p>Ingresa al siguiente enlace para ingresar tu nueva contraseña:</p>
             <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Restablecer Contraseña</a>
             <p style="margin-top: 20px;">Si no solicitaste este cambio, puedes ignorar este correo.</p>
         </div>
         `;
-
         await sendEmail(worker.email, subject, htmlContent);
-
-        res.status(200).json({ message: 'Email sent successfully', worker });
+        res.status(200).json({ message: 'Email sent successfully'});
     } catch (error) {
-        console.error('Error getting worker email by id:', error);
-        res.status(500).json({ message: 'Error getting worker email by id' });
+        console.error(error);
+        res.status(500).json({ message: 'Error getting worker email' });
     }
 };
 
