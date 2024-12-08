@@ -5,7 +5,8 @@ import { uploadImage } from '../services/photoService';
 import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
 import { sendEmail } from '../services/emailService';
-import { hostService } from '../config/config';
+import { hostService, host } from '../config/config';
+import SocketsClients from '../sockes';
 
 
 
@@ -94,13 +95,16 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
     try {
         const { category } = req.params;
         const search: string | undefined = req.query.search as string;
+        const idClient = new Date().getTime().toString();
         let workers: Worker[] = await getDataByCategory(category) as Worker[];
+        const sockes = SocketsClients.getInstance();
         let filteredWorkers = workers.map(worker => ({
             id: worker.id,
             fullName: capitalizeFullName(worker.fullName),
             photo: worker.photo,
             job: capitalizeJob(worker.job),
             phone: worker.phone,
+            isAvailable: worker.isAvailable
         })).filter(worker => {
             if (search) {
                 return worker.job.toLowerCase().includes(search.toLowerCase());
@@ -115,6 +119,7 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
                 photo: worker.photo,
                 job: capitalizeJob(worker.job),
                 phone: worker.phone,
+                isAvailable: worker.isAvailable
             }))};
         const message = "Hola, alguien está haciendo una búsqueda que se ajusta a tu perfil. ¿Deseas notificar tu disponibilidad? \n1. Sí \n2. No";
         filteredWorkers.map(async worker => {
@@ -129,8 +134,14 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
             } catch (error) {
                 console.error(`Error sending message to worker ${worker.id}:`, error);
             }
+        }); 
+        sockes.createClient(idClient,filteredWorkers.map((worker) => worker.id));
+        res.status(200).json({
+            refreshResult: host,
+            client: idClient,
+            channel: 'refresh',
+            data: filteredWorkers
         });
-        res.status(200).json(filteredWorkers);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error retrieving workers' });
@@ -247,15 +258,17 @@ export const updateWorkerAvailability = async (req: Request, res: Response) => {
     try {
        const { phone, isAvailable } = req.body;
        const worker: Worker = await getDataByPhone(phone) as Worker;
-  
+       const sockes = SocketsClients.getInstance(); 
         if (!worker) {
         res.status(404).json({ message: 'Worker not found' });
         return;
         }
-  
       worker.isAvailable = isAvailable;
       await updateData('workers', worker.id, { isAvailable });
-  
+      sockes.refreshResult({
+        id: worker.id,
+        isAvailable: isAvailable
+       });
       res.status(200).json({ message: 'Availability updated successfully' });
     } catch (error) {
       console.error('Error updating availability:', error);
