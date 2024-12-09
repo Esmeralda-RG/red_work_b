@@ -4,6 +4,8 @@ import { query } from "express";
 
 const db = getFirestore(app);
 
+export default db;
+
 export const addData = async (collectionName: string, data: object): Promise<string> => {
     try {
         const collectionRef = db.collection(collectionName);

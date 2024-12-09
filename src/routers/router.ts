@@ -15,9 +15,10 @@ import {
 
 import {
     createRequest,
-    getRequestDetails,
+    updateRequestStatus,
     submitRatings,
     search,
+    getRequestByWorker,
 } from '../controllers/controllerRequest';
 
 const router = Router();
@@ -33,8 +34,10 @@ router.put('/workers/availability', updateWorkerAvailability);
 router.get('/workers/category/:category', getWorkersByCategoryAndSearch);
 router.get('/search', search);
 router.post('/request', createRequest);
-router.get('/request/worker/:id', getRequestDetails);
-router.post('/ratings', submitRatings);
+router.get('/request/worker/:id', getRequestByWorker);
+router.patch('/request/worker/:id/:requestId', updateRequestStatus);
+router.post('/ratings/:id', submitRatings);
+router.get('/ratings/:id', getWorkerById);
 router.post('/workers/reset-password', getWorkerEmailById);
 
 
