@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import { RegisterWorkerData, Worker } from './interfaces/register_worker_data';
-import { addData, updateData, getData, deleteData, getDataById, getDataByPhone, getDataByCategory, createRequestInFirebase } from '../services/firestoreService';
+import { addData, updateData, getData, deleteData, getDataById, getDataByPhone, getDataByCategory} from '../services/firestoreService';
 import { uploadImage } from '../services/photoService';
 import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
@@ -47,9 +47,8 @@ export const getWorkerById = async (req: Request, res: Response) => {
 
 export const getWorkerEmailById = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
-
-        const worker: Worker = await getDataById('workers', id) as Worker;
+        const { phone, url } = req.body; 
+        const worker: Worker = await getDataByPhone(phone) as Worker;
 
         if (!worker) {
             res.status(404).json({ message: 'Worker not found' });
@@ -58,27 +57,26 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
 
         const subject = 'Enlace para restablecer contraseña';
         const logoUrl = 'https://res.cloudinary.com/dlq7gkrvq/image/upload/f_auto,q_auto/bt9d54drdkja28ws2klj'; 
-        const resetLink = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'; 
+        const resetLink = url;
 
         const htmlContent = `
         <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
             <img src="${logoUrl}" alt="RedWork Logo" style="width: 150px; margin-bottom: 20px;">
-            <h2>Hola ${worker.fullName},</h2>
+            <h2>Hola ${capitalizeFullName(worker.fullName)},</h2>
             <p>Recibimos una solicitud para restablecer tu contraseña de RedWork.</p>
             <p>Ingresa al siguiente enlace para ingresar tu nueva contraseña:</p>
             <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Restablecer Contraseña</a>
             <p style="margin-top: 20px;">Si no solicitaste este cambio, puedes ignorar este correo.</p>
         </div>
         `;
-
         await sendEmail(worker.email, subject, htmlContent);
-
-        res.status(200).json({ message: 'Email sent successfully', worker });
+        res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
-        console.error('Error getting worker email by id:', error);
-        res.status(500).json({ message: 'Error getting worker email by id' });
+        console.error(error);
+        res.status(500).json({ message: 'Error getting worker email' });
     }
 };
+
 
 export const getWorkerByPhone = async (req: Request, res: Response) => {
     try {
@@ -100,10 +98,6 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
         const idClient = new Date().getTime().toString();
         let workers: Worker[] = await getDataByCategory(category) as Worker[];
         const sockes = SocketsClients.getInstance();
-        
-        
-
-
 
         let filteredWorkers = workers.map(worker => ({
             id: worker.id,
@@ -252,8 +246,6 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
     }
 };
 
-
-
 export const deleteWorker = async (req: Request<{ id: string }>, res: Response) => {
     const { id } = req.params;
     try {
@@ -269,7 +261,6 @@ export const deleteWorker = async (req: Request<{ id: string }>, res: Response) 
         res.status(500).json({ message: 'Error deleting worker' });
     }
 }
-
 
 export const updateWorkerAvailability = async (req: Request, res: Response) => {
     try {
@@ -293,45 +284,3 @@ export const updateWorkerAvailability = async (req: Request, res: Response) => {
     }
   };
   
-
-export const getAvailableWorkers = (req: Request, res: Response) => {
-    res.status(200).json({message: 'Get available workers'});
-}
-
-export const createRequest = async (req: Request, res: Response) => {
-    try {
-        const { phoneNumberClient, phoneNumberWorker } = req.body;  
-        const clientName = req.body.clientName;  
-
-        if (!phoneNumberClient || !phoneNumberWorker || !clientName) {
-            res.status(400).json({ message: 'Faltan datos requeridos' });
-        }
-        const requestData = {
-            clientName,
-            phoneNumberClient,
-            phoneNumberWorker,
-            status: 'pending', 
-            createdAt: new Date(),  
-        };
-
-        const requestId = await createRequestInFirebase(requestData);
-
-        res.status(201).json({ message: 'Solicitud creada exitosamente'});
-    } catch (error) {
-        console.error('Error al crear la solicitud:', error);
-        res.status(500).json({ message: 'Error al crear la solicitud', error });
-    }
-};
-
-export const getRequestDetails = (req: Request<{ id: string }>, res: Response) => {
-    const {id} = req.params;
-    res.status(200).json({message: `Get request details for ID: ${id}`});
-}
-
-export const submitRatings = (req: Request, res: Response) => {
-    res.status(201).json({message: 'Submit ratings'});
-}
-
-export const search = (req: Request, res: Response) => {
-    res.status(200).json({message: 'Search'});
-}
