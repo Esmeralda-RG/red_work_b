@@ -5,7 +5,7 @@ import { uploadImage } from '../services/photoService';
 import { capitalizeFullName, capitalizeJob } from '../utils/formatUtils';
 import bcrypt from 'bcryptjs';
 import { sendEmail } from '../services/emailService';
-import { hostService, host } from '../config/config';
+import { hostService, host, phoneUsers } from '../config/config';
 import SocketsClients from '../sockes';
 import { calculateDistance } from '../utils/calculateDistance';
 
@@ -37,6 +37,7 @@ export const getWorkerById = async (req: Request, res: Response) => {
             photo: worker.photo,
             job: capitalizeJob(worker.job),
             workImages: worker.workImages,
+            link: `https://wa.me/${phoneUsers}?text=Trabajador: ${worker.id}\nPor favor, no elimine o modifique este mensaje.`
         };
         res.status(200).json(filteredWorker);
     } catch (error) {
