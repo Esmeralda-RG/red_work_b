@@ -37,15 +37,13 @@ class SocketsClients {
 
 
     refreshResult(data: DataRefresh): void {
-        const keys = Object.keys(this.clients);
-        for(let i= 0; i<keys.length; i++){
-            const client = this.clients[keys[i]];
+     
 
-            if (client.id.includes(data.id) && client.socket) {
-                client.socket.emit("refresh", data);
+        for (const key in this.clients) {
+            if (this.clients[key].id.includes(data.id) && this.clients[key].socket) {
+                this.clients[key].socket.emit('refresh', data);
             }
-        }
-      
+        } 
     }
 
     createClient(key:string, ids:string[]): void {
