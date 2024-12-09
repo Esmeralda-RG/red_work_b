@@ -253,7 +253,8 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
     }
 
     try {
-        await updateData('workers', id, filteredData);
+        const worker = await getDataByPhone(id) as Worker;
+        await updateData('workers', worker.id, filteredData);
         res.status(200).json({ message: `Worker ${id} updated successfully` });
     } catch (error) {
         console.error(error);
@@ -265,6 +266,7 @@ export const deleteWorker = async (req: Request<{ id: string }>, res: Response) 
     const { id } = req.params;
     try {
         const worker = await getDataByPhone(id) as Worker | null;
+    
         if (!worker) {
             res.status(404).json({ message: 'Worker not found' });
             return;
