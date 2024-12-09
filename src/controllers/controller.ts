@@ -8,7 +8,6 @@ import { sendEmail } from '../services/emailService';
 import { hostService, host, phoneUsers } from '../config/config';
 import SocketsClients from '../sockes';
 import { calculateDistance } from '../utils/calculateDistance';
-import { ratingsByWorker } from './controllerRequest';
 
 
 
