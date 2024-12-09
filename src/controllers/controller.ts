@@ -111,7 +111,7 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
             job: capitalizeJob(worker.job),
             phone: worker.phone,
             isAvailable: worker.isAvailable,
-            workImages: worker.workImages,
+            link: `https://wa.me/${phoneUsers}?text=Trabajador: ${worker.id}\nPor favor, no elimine o modifique este mensaje.`,
             distance: calculateDistance(worker.location.latitude, worker.location.longitude, 4.60971, -74.08175)
         })).filter(worker => {
             if (search) {
@@ -128,7 +128,7 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
                 job: capitalizeJob(worker.job),
                 phone: worker.phone,
                 isAvailable: worker.isAvailable,
-                workImages: worker.workImages,
+                link: `https://wa.me/${phoneUsers}?text=Trabajador: ${worker.id}\nPor favor, no elimine o modifique este mensaje.`,
                 distance: calculateDistance(worker.location.latitude, worker.location.longitude, 4.60971, -74.08175)
             }))};
         const message = "Hola, alguien está haciendo una búsqueda que se ajusta a tu perfil. ¿Deseas notificar tu disponibilidad? \n1. Sí \n2. No";
