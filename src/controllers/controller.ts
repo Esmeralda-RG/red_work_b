@@ -31,15 +31,14 @@ export const getAllWorkers = async (req: Request, res: Response) => {
 export const getWorkerById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+        
         const worker: Worker = await getDataById('workers', id) as Worker;
-        const ratings =  ratingsByWorker(req, res);
         const filteredWorker = {
             id: worker.id,
             fullName: capitalizeFullName(worker.fullName), 
             photo: worker.photo,
             job: capitalizeJob(worker.job),
             workImages: worker.workImages,
-            ratings: ratings,
             link: `https://wa.me/${phoneUsers}?text=Trabajador: ${worker.id} \n\nPor favor, no elimine o modifique este mensaje.`
         };
         res.status(200).json(filteredWorker);

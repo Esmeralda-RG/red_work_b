@@ -19,6 +19,7 @@ import {
     submitRatings,
     search,
     getRequestByWorker,
+    ratingsByWorker,
 } from '../controllers/controllerRequest';
 
 const router = Router();
@@ -37,7 +38,7 @@ router.post('/request', createRequest);
 router.get('/request/worker/:id', getRequestByWorker);
 router.patch('/request/worker/:id/:requestId', updateRequestStatus);
 router.post('/ratings/:id', submitRatings);
-router.get('/ratings/:id', getWorkerById);
+router.get('/ratings/:id', ratingsByWorker);
 router.post('/workers/reset-password', getWorkerEmailById);
 
 

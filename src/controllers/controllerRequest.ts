@@ -107,15 +107,21 @@ export const ratingsByWorker = async (req: Request, res: Response) => {
         const ratings = await db.collection('ratings').doc(id).collection('ratings').get();
 
         if (ratings.empty) {
-            res.status(404).json({ ratings: []});
+            res.status(200).json({ 
+                average: 0,
+                ratings: []});
+                return;
         }
 
         const ratingsData = ratings.docs.map((doc) => doc.data());
-
-        res.status(200).json({ ratings: ratingsData.map((rating) => ({
+        console.log(ratingsData);
+        
+        res.status(200).json({ 
+            average: ratingsData.reduce((acc, rating) => acc + rating.rating, 0) / ratingsData.length,
+            ratings: ratingsData.map((rating) => ({
             client: rating.client,
             rating: rating.rating,
-            date: rating.date.toDate(),
+            date: rating.date.toString(),
         }))});
 
     } catch (error) {
