@@ -242,6 +242,11 @@ export const updateWorker = async (req: Request<{ id: string }, {}, RegisterWork
         const url = await uploadImage(photo, 'workers', phone);
         filteredData.photo = url;
     }
+    
+    if (filteredData.password){
+        const hashedPassword = await bcrypt.hash(password, 10);
+        filteredData.password = hashedPassword;
+    }
 
     try {
         await updateData('workers', id, filteredData);
