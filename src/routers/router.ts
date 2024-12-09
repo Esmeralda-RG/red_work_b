@@ -35,6 +35,6 @@ router.get('/search', search);
 router.post('/request', createRequest);
 router.get('/request/worker/:id', getRequestDetails);
 router.post('/ratings', submitRatings);
-router.get('/workers/email/:id', getWorkerEmailById);
+router.post('/workers/email/:id', getWorkerEmailById);
 
 export default router;

@@ -5,18 +5,16 @@ import { hostService, host } from '../config/config';
 
 export const createRequest = async (req: Request, res: Response) => {
     try {
-        const { phoneNumberClient, phoneNumberWorker, clientName} = req.body;  
+        const { phoneClient, workerId} = req.body;  
 
-        if (!phoneNumberClient || !phoneNumberWorker || !clientName) {
+        if (!phoneClient || !workerId) {
             res.status(400).json({ message: 'Faltan datos requeridos' });
         }
 
         const requestData = {
-            clientName,
-            phoneNumberClient,
-            phoneNumberWorker,
+            phoneClient,
+            workerId,
             status: 'pending', 
-            createdAt: new Date(),  
         };
 
         const requestId = await addData('requests', requestData);

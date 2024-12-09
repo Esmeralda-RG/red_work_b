@@ -47,9 +47,8 @@ export const getWorkerById = async (req: Request, res: Response) => {
 
 export const getWorkerEmailById = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
-
-        const worker: Worker = await getDataById('workers', id) as Worker;
+        const { phone, url } = req.body; 
+        const worker: Worker = await getDataByPhone(phone) as Worker;
 
         if (!worker) {
             res.status(404).json({ message: 'Worker not found' });
@@ -58,7 +57,7 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
 
         const subject = 'Enlace para restablecer contraseña';
         const logoUrl = 'https://res.cloudinary.com/dlq7gkrvq/image/upload/f_auto,q_auto/bt9d54drdkja28ws2klj'; 
-        const resetLink = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'; 
+        const resetLink = url;
 
         const htmlContent = `
         <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
@@ -71,12 +70,13 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
         </div>
         `;
         await sendEmail(worker.email, subject, htmlContent);
-        res.status(200).json({ message: 'Email sent successfully'});
+        res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error getting worker email' });
     }
 };
+
 
 export const getWorkerByPhone = async (req: Request, res: Response) => {
     try {
