@@ -47,8 +47,8 @@ export const getWorkerById = async (req: Request, res: Response) => {
 
 export const getWorkerEmailById = async (req: Request, res: Response) => {
     try {
-        const { phone, url } = req.body; 
-        const worker: Worker = await getDataByPhone(phone) as Worker;
+        const {url, id } = req.body; 
+        const worker: Worker = await getDataById('workers', id) as Worker;
 
         if (!worker) {
             res.status(404).json({ message: 'Worker not found' });
@@ -57,7 +57,7 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
 
         const subject = 'Enlace para restablecer contraseña';
         const logoUrl = 'https://res.cloudinary.com/dlq7gkrvq/image/upload/f_auto,q_auto/bt9d54drdkja28ws2klj'; 
-        const resetLink = url;
+   
 
         const htmlContent = `
         <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
@@ -65,12 +65,16 @@ export const getWorkerEmailById = async (req: Request, res: Response) => {
             <h2>Hola ${capitalizeFullName(worker.fullName)},</h2>
             <p>Recibimos una solicitud para restablecer tu contraseña de RedWork.</p>
             <p>Ingresa al siguiente enlace para ingresar tu nueva contraseña:</p>
-            <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Restablecer Contraseña</a>
+            <a href="${url}" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;">Restablecer Contraseña</a>
             <p style="margin-top: 20px;">Si no solicitaste este cambio, puedes ignorar este correo.</p>
         </div>
         `;
         await sendEmail(worker.email, subject, htmlContent);
-        res.status(200).json({ message: 'Email sent successfully' });
+        const email = worker.email.split('@');
+       const obscuredEmail = email[0].substring(0,2) + ('*'.repeat(email[0].length -2)) + '@' + email[1].substring(0,2) + ('*'.repeat(email[1].length - 3)) + email[1][email[1].length - 1]
+        res.status(200).json({ 
+            email: obscuredEmail
+         });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error getting worker email' });
@@ -98,7 +102,7 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
         const idClient = new Date().getTime().toString();
         let workers: Worker[] = await getDataByCategory(category) as Worker[];
         const sockes = SocketsClients.getInstance();
-
+       
         let filteredWorkers = workers.map(worker => ({
             id: worker.id,
             fullName: capitalizeFullName(worker.fullName),
@@ -106,6 +110,7 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
             job: capitalizeJob(worker.job),
             phone: worker.phone,
             isAvailable: worker.isAvailable,
+            workImages: worker.workImages,
             distance: calculateDistance(worker.location.latitude, worker.location.longitude, 4.60971, -74.08175)
         })).filter(worker => {
             if (search) {
@@ -122,6 +127,7 @@ export const getWorkersByCategoryAndSearch = async (req: Request, res: Response)
                 job: capitalizeJob(worker.job),
                 phone: worker.phone,
                 isAvailable: worker.isAvailable,
+                workImages: worker.workImages,
                 distance: calculateDistance(worker.location.latitude, worker.location.longitude, 4.60971, -74.08175)
             }))};
         const message = "Hola, alguien está haciendo una búsqueda que se ajusta a tu perfil. ¿Deseas notificar tu disponibilidad? \n1. Sí \n2. No";
